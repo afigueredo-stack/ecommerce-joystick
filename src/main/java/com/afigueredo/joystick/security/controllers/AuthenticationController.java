@@ -1,5 +1,7 @@
 package com.afigueredo.joystick.security.controllers;
 
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
@@ -53,28 +55,47 @@ public class AuthenticationController {
 	 * @param result
 	 * @return ResponseEntity<Response<TokenDto>>
 	 * @throws AuthenticationException
+	 * @throws IOException 
 	 */
 	@PostMapping
 	public ResponseEntity<Response<TokenDto>> gerarTokenJwt(@Valid @RequestBody JwtAuthenticationDto authenticationDto,
-			BindingResult result) throws AuthenticationException {
+			BindingResult result) throws AuthenticationException, NoSuchAlgorithmException {
 		Response<TokenDto> response = new Response<TokenDto>();
 
 		if (result.hasErrors()) {
-			log.error("Erro validando lançamento: {}", result.getAllErrors());
+			log.error("Erro validando Token: {}", result.getAllErrors());
 			result.getAllErrors().forEach(error -> response.getErrors().add(error.getDefaultMessage()));
 			return ResponseEntity.badRequest().body(response);
 		}
 
 		log.info("Gerando token para o email {}.", authenticationDto.getEmail());
+		
+		try {
 		Authentication authentication = authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(authenticationDto.getEmail(), authenticationDto.getSenha()));
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 
 		UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationDto.getEmail());
 		String token = jwtTokenUtil.obterToken(userDetails);
-		response.setData(new TokenDto(token));
+		
+		log.error("Token: {}", token);
+		
+		if (token == null) {
+			log.error("Erro validando Token: {}", result.getAllErrors());
+			result.getAllErrors().forEach(error -> response.getErrors().add(error.getDefaultMessage()));
+			return ResponseEntity.badRequest().body(response);
+		}
+		
+		response.setData(new TokenDto(token));	
 
-		return ResponseEntity.ok(response);
+		return ResponseEntity.ok(response);		
+		} catch (Exception e) {	
+			log.error("Usuario e/ou senha incorreto(s).: {}", result.getAllErrors());
+			response.getErrors().add("Usuario e/ou senha incorreto(s)");
+			return ResponseEntity.badRequest().body(response);			
+		}	
+		
+		
 	}
 
 	/**
