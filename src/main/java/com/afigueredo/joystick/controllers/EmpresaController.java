@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(path = "/ecommerce")
+@RequestMapping(path = "/ecommerce/empresa")
 @CrossOrigin(origins = "*")
 public class EmpresaController {
 
@@ -34,7 +34,7 @@ public class EmpresaController {
    * Retorna uma empresa
    * 
    * @param cnpjcpf
-   * @return ResponseEntity<Resonse<EmpresaDto>
+   * @return ResponseEntity<Response<EmpresaDto>
    */
   @GetMapping(value = "/consulta-empresa/{cnpjcpf}")
   public ResponseEntity<Response<EmpresaDto>> buscarPorCnpjCpf(@PathVariable("cnpjcpf") String cnpjCpf) {

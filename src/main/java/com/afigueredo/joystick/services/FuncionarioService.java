@@ -37,5 +37,13 @@ public interface FuncionarioService {
    * @return Optional<Funcionario>
    */
   Optional<Funcionario> buscarPorId(Long id);
+  
+  /**
+   * Busca e retorna um funcionário por usuario.
+   * 
+   * @param usuario
+   * @return Optional<Funcionario>
+   */
+  Optional<Funcionario> buscarPorUsuario(String usuario);
 
 }

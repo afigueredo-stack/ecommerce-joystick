@@ -1,4 +1,4 @@
-package com.afigueredo.joystick.security.utils;
+package com.afigueredo.joystick.utils;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -44,7 +44,7 @@ public class JwtTokenUtil {
 	}
 
 	/**
-	 * Retorna a data de expiração de um token JWT.
+	 * Retorna a data de expirão de um token JWT.
 	 * 
 	 * @param token
 	 * @return Date
@@ -79,7 +79,7 @@ public class JwtTokenUtil {
 	}
 
 	/**
-	 * Verifica e retorna se um token JWT é válido.
+	 * Verifica e retorna se um token JWT v�lido.
 	 * 
 	 * @param token
 	 * @return boolean
@@ -121,7 +121,7 @@ public class JwtTokenUtil {
 	}
 
 	/**
-	 * Retorna a data de expiração com base na data atual.
+	 * Retorna a data de expira��o com base na data atual.
 	 * 
 	 * @return Date
 	 */
@@ -130,7 +130,7 @@ public class JwtTokenUtil {
 	}
 
 	/**
-	 * Verifica se um token JTW está expirado.
+	 * Verifica se um token JTW est� expirado.
 	 * 
 	 * @param token
 	 * @return boolean

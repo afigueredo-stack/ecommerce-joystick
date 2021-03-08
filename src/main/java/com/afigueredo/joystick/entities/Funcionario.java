@@ -1,9 +1,7 @@
 package com.afigueredo.joystick.entities;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.util.Date;
-import java.util.Optional;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -17,7 +15,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 import com.afigueredo.joystick.enums.PerfilEnum;
 
@@ -30,11 +27,9 @@ public class Funcionario implements Serializable {
   private Long id;
   private String nome;
   private String email;
+  private String usuario;
   private String senha;
   private String cpf;
-  private BigDecimal valorHora;
-  private Float qtdHorasTrabalhoDia;
-  private Float qtdHorasAlmoco;
   private PerfilEnum perfil;
   private Date dataCriacao;
   private Date dataAtualizacao;
@@ -80,46 +75,13 @@ public class Funcionario implements Serializable {
     this.cpf = cpf;
   }
 
-  @Column(name = "valor_hora", nullable = true)
-  public BigDecimal getValorHora() {
-    return valorHora;
+  @Column(name = "usuario", nullable = false)
+  public String getUsuario() {
+	return usuario;
   }
 
-  @Transient
-  public Optional<BigDecimal> getValorHoraOpt() {
-    return Optional.ofNullable(valorHora);
-  }
-
-  public void setValorHora(BigDecimal valorHora) {
-    this.valorHora = valorHora;
-  }
-
-  @Column(name = "qtd_horas_trabalho_dia", nullable = true)
-  public Float getQtdHorasTrabalhoDia() {
-    return qtdHorasTrabalhoDia;
-  }
-
-  @Transient
-  public Optional<Float> getQtdHorasTrabalhoDiaOpt() {
-    return Optional.ofNullable(qtdHorasTrabalhoDia);
-  }
-
-  public void setQtdHorasTrabalhoDia(Float qtdHorasTrabalhoDia) {
-    this.qtdHorasTrabalhoDia = qtdHorasTrabalhoDia;
-  }
-
-  @Column(name = "qtd_horas_almoco", nullable = true)
-  public Float getQtdHorasAlmoco() {
-    return qtdHorasAlmoco;
-  }
-
-  @Transient
-  public Optional<Float> getQtdHorasAlmocoOpt() {
-    return Optional.ofNullable(qtdHorasAlmoco);
-  }
-
-  public void setQtdHorasAlmoco(Float qtdHorasAlmoco) {
-    this.qtdHorasAlmoco = qtdHorasAlmoco;
+  public void setUsuario(String usuario) {
+	this.usuario = usuario;
   }
 
   @Enumerated(EnumType.STRING)
@@ -182,9 +144,8 @@ public class Funcionario implements Serializable {
 
   @Override
   public String toString() {
-    return "Funcionario [id=" + id + ", nome=" + nome + ", email=" + email + ", senha=" + senha + ", cpf=" + cpf
-        + ", valorHora=" + valorHora + ", qtdHorasTrabalhoDia=" + qtdHorasTrabalhoDia + ", qtdHorasAlmoco="
-        + qtdHorasAlmoco + ", perfil=" + perfil + ", dataCriacao=" + dataCriacao + ", dataAtualizacao="
+    return "Funcionario [id=" + id + ", nome=" + nome + ", email=" + email + ", usuario=" + usuario + ", senha=" + senha + ", cpf=" + cpf 
+    		+ ", perfil=" + perfil + ", dataCriacao=" + dataCriacao + ", dataAtualizacao="
         + dataAtualizacao + ", empresa=" + empresa + "]";
   }
 

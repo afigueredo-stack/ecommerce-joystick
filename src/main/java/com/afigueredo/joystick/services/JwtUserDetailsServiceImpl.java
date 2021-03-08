@@ -1,11 +1,9 @@
-package com.afigueredo.joystick.security.services;
+package com.afigueredo.joystick.services;
 
 import java.util.Optional;
 
 import com.afigueredo.joystick.entities.Funcionario;
 import com.afigueredo.joystick.security.JwtUserFactory;
-import com.afigueredo.joystick.services.FuncionarioService;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -20,13 +18,13 @@ public class JwtUserDetailsServiceImpl implements UserDetailsService {
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		Optional<Funcionario> funcionario = funcionarioService.buscarPorEmail(username);
+		Optional<Funcionario> funcionario = funcionarioService.buscarPorUsuario(username);
 
 		if (funcionario.isPresent()) {
 			return JwtUserFactory.create(funcionario.get());
 		}
 
-		throw new UsernameNotFoundException("Email não encontrado.");
+		throw new UsernameNotFoundException("Usuario não encontrado.");
 	}
 
 }

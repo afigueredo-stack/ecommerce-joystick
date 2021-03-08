@@ -1,4 +1,4 @@
-package com.afigueredo.joystick.security.config;
+package com.afigueredo.joystick.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -17,7 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.afigueredo.joystick.security.JwtAuthenticationEntryPoint;
-import com.afigueredo.joystick.security.filters.JwtAuthenticationTokenFilter;
+import com.afigueredo.joystick.filters.JwtAuthenticationTokenFilter;
 
 @Configuration
 @EnableWebSecurity

@@ -1,4 +1,4 @@
-package com.afigueredo.joystick.security.controllers;
+package com.afigueredo.joystick.controllers;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
@@ -25,10 +25,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.afigueredo.joystick.dtos.AuthenticationDto;
+import com.afigueredo.joystick.dtos.LogInDto;
+import com.afigueredo.joystick.dtos.TokenDto;
+import com.afigueredo.joystick.entities.Funcionario;
 import com.afigueredo.joystick.response.Response;
-import com.afigueredo.joystick.security.dto.JwtAuthenticationDto;
-import com.afigueredo.joystick.security.dto.TokenDto;
-import com.afigueredo.joystick.security.utils.JwtTokenUtil;
+import com.afigueredo.joystick.services.FuncionarioService;
+import com.afigueredo.joystick.utils.JwtTokenUtil;
 
 @RestController
 @RequestMapping("/auth")
@@ -48,55 +51,61 @@ public class AuthenticationController {
 	@Autowired
 	private UserDetailsService userDetailsService;
 
+	@Autowired
+	private FuncionarioService funcionarioService;
+
 	/**
-	 * Gera e retorna um novo token JWT.
+	 * Gera e retorna dados do usuário com token JWT.
 	 * 
 	 * @param authenticationDto
 	 * @param result
-	 * @return ResponseEntity<Response<TokenDto>>
+	 * @return ResponseEntity<Response<LogInDto>>
 	 * @throws AuthenticationException
 	 * @throws IOException 
 	 */
 	@PostMapping
-	public ResponseEntity<Response<TokenDto>> gerarTokenJwt(@Valid @RequestBody JwtAuthenticationDto authenticationDto,
+	public ResponseEntity<Response<LogInDto>> gerarDadosLogIn(@Valid @RequestBody AuthenticationDto authenticationDto,
 			BindingResult result) throws AuthenticationException, NoSuchAlgorithmException {
-		Response<TokenDto> response = new Response<TokenDto>();
+		Response<LogInDto> response = new Response<LogInDto>();
 
 		if (result.hasErrors()) {
-			log.error("Erro validando Token: {}", result.getAllErrors());
+			log.error("Erro validando Token para campos informandos: {}", result.getAllErrors());
 			result.getAllErrors().forEach(error -> response.getErrors().add(error.getDefaultMessage()));
 			return ResponseEntity.badRequest().body(response);
 		}
 
-		log.info("Gerando token para o email {}.", authenticationDto.getEmail());
-		
+		log.info("Gerando token para o usuario {}.", authenticationDto.getUsuario());
+
 		try {
-		Authentication authentication = authenticationManager.authenticate(
-				new UsernamePasswordAuthenticationToken(authenticationDto.getEmail(), authenticationDto.getSenha()));
-		SecurityContextHolder.getContext().setAuthentication(authentication);
+			Authentication authentication = authenticationManager.authenticate(
+					new UsernamePasswordAuthenticationToken(authenticationDto.getUsuario(), authenticationDto.getSenha()));
+			SecurityContextHolder.getContext().setAuthentication(authentication);
+			
 
-		UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationDto.getEmail());
-		String token = jwtTokenUtil.obterToken(userDetails);
-		
-		log.error("Token: {}", token);
-		
-		if (token == null) {
-			log.error("Erro validando Token: {}", result.getAllErrors());
-			result.getAllErrors().forEach(error -> response.getErrors().add(error.getDefaultMessage()));
-			return ResponseEntity.badRequest().body(response);
-		}
-		
-		response.setData(new TokenDto(token));	
+			UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationDto.getUsuario());
+			String token = jwtTokenUtil.obterToken(userDetails);
 
-		return ResponseEntity.ok(response);		
+			log.info("Token gerado: {}", token);
+
+			if (token == null) {
+				log.error("Erro na validação do token que resultou em vazio: {}", result.getAllErrors());
+				result.getAllErrors().forEach(error -> response.getErrors().add(error.getDefaultMessage()));
+				return ResponseEntity.badRequest().body(response);
+			}
+
+			response.setData(extrairDados(token, authenticationDto.getUsuario()));	
+
+			return ResponseEntity.ok(response);	
+
 		} catch (Exception e) {	
-			log.error("Usuario e/ou senha incorreto(s).: {}", result.getAllErrors());
+			log.error("Usuario e/ou senha incorreto(s). Exception: {}", result.getAllErrors());
 			response.getErrors().add("Usuario e/ou senha incorreto(s)");
 			return ResponseEntity.badRequest().body(response);			
 		}	
-		
-		
+
+
 	}
+
 
 	/**
 	 * Gera um novo token com uma nova data de expiração.
@@ -127,6 +136,26 @@ public class AuthenticationController {
 		String refreshedToken = jwtTokenUtil.refreshToken(token.get());
 		response.setData(new TokenDto(refreshedToken));
 		return ResponseEntity.ok(response);
+	}
+
+
+	/**
+	 * Metodo para compactar as informações necessárias
+	 * para o LogIn **/
+	private LogInDto extrairDados(String token, String usuario) {
+		log.info("Compactando dados no DTO...");
+		LogInDto logInDto = new LogInDto();
+
+		Optional<Funcionario> funcionario = funcionarioService.buscarPorUsuario(usuario);
+
+		logInDto.setId(funcionario.get().getId());
+		logInDto.setUsuario(funcionario.get().getUsuario());
+		logInDto.setNome(funcionario.get().getNome());
+		logInDto.setEmpresa(funcionario.get().getEmpresa());
+		logInDto.setPerfil(funcionario.get().getPerfil());
+		logInDto.setToken(token);
+
+		return logInDto;
 	}
 
 }

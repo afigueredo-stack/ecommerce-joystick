@@ -1,4 +1,4 @@
-package com.afigueredo.joystick.security.filters;
+package com.afigueredo.joystick.filters;
 
 import java.io.IOException;
 
@@ -15,7 +15,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.afigueredo.joystick.security.utils.JwtTokenUtil;
+import com.afigueredo.joystick.utils.JwtTokenUtil;
 
 public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
